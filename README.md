@@ -218,15 +218,11 @@ This project demonstrates several key concepts for the Web Programming II course
 
 ## Improvements
 
-[ ] Change all exports to use named exports
-[ ] Add tests
-[ ] Add more features
-[ ] Add more documentation
+- [ ] Change all exports to use named exports
+- [ ] Add tests
+- [ ] Add more features
+- [ ] Add more documentation
 
 ## Contributing
 
 This project is designed for educational purposes. Feel free to fork and extend it for your own learning.
-
-## License
-
-This project is licensed under the ISC License.
