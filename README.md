@@ -214,11 +214,7 @@ This project demonstrates several key concepts for the Web Programming II course
 1. Clean Architecture : Separation of concerns and dependency inversion
 2. Domain-Driven Design : Focus on the core domain and business logic
 3. Repository Pattern : Abstraction of data access
-4. Dependency Injection : Loose coupling between components
-5. Adapter Pattern : Adapting external interfaces to internal requirements
-6. Factory Pattern : Creating objects without specifying concrete classes
-7. Framework Independence : Building applications that aren't tied to specific frameworks
-8. Testing Strategies : Unit, integration, and repository testing
+4. Framework Independence : Building applications that aren't tied to specific frameworks
 
 ## Improvements
 
