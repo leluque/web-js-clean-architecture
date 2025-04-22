@@ -1,4 +1,4 @@
-# WP2 Base API - Clean Architecture Example
+# Base NodeJS Web Project with Clean Architecture Example
 
 ## Overview
 
