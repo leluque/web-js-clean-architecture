@@ -1,3 +1,5 @@
+const { UserNotFoundError, UserDisabledError } = require('../errors');
+
 /**
  * @class UploadProfileImageUseCase
  * @description Handles uploading and updating a user's profile image
@@ -24,11 +26,11 @@ class UploadProfileImageUseCase {
     // Find existing user
     const existingUser = await this.userRepository.findById(userId);
     if (!existingUser) {
-      throw new Error('User not found');
+      throw new UserNotFoundError('User not found');
     }
 
     if (existingUser.disabled) {
-      throw new Error('Account is disabled');
+      throw new UserDisabledError('Account is disabled');
     }
 
     // Update user with profile image

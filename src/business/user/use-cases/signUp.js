@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const { User } = require('@business/user/user');
 const { getEmailService } = require('@email');
 const { logger } = require('../../../infrastructure/log');
+const { UserEmailNotValidatedError, InvalidPasswordError } = require('../errors');
 
 /**
  * @class SignUpUseCase
@@ -33,14 +34,14 @@ class SignUpUseCase {
     // Check if user already exists
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
-      throw new Error('User with this email already exists');
+      throw new UserEmailNotValidatedError('User with this email already exists');
     }
 
     // Hash password
     const saltRounds = 10;
     let hashedPassword;
     if (!password || password.trim().length < 8) {
-      throw new Error('Password must be at least 8 characters long');
+      throw new InvalidPasswordError('Password must be at least 8 characters long');
     }
     hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -72,9 +73,6 @@ class SignUpUseCase {
       emailContent
     );
 
-    if (!savedUser) {
-      throw new Error('User creation failed');
-    }
     return savedUser.publicData;
   }
 }

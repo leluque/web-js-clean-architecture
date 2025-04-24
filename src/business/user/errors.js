@@ -33,6 +33,13 @@ class UserNotFoundError extends UserError {
   }
 }
 
+class InvalidPasswordError extends UserError {
+  constructor(message) {
+    super(message || 'Invalid password');
+    this.statusCode = 400;
+  }
+}
+
 class EmailAlreadyInUseError extends UserError {
   constructor(message) {
     super(message || 'Email already in use');
@@ -47,4 +54,5 @@ module.exports = {
   UserEmailNotValidatedError,
   UserNotFoundError,
   EmailAlreadyInUseError,
+  InvalidPasswordError,
 };
