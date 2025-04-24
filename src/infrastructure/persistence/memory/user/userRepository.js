@@ -1,4 +1,3 @@
-const { User } = require('@business/user/user');
 const UserRepository = require('@business/user/userRepository');
 
 /**

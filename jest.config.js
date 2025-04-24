@@ -15,8 +15,8 @@ module.exports = {
     '^@persistence/(.*)$': '<rootDir>/src/infrastructure/persistence/$1',
     '^@web/(.*)$': '<rootDir>/src/infrastructure/web/$1',
     '^@express/(.*)$': '<rootDir>/src/infrastructure/web/express/$1',
-    '^@fastify/(.*)$': '<rootDir>/src/infrastructure/web/fastify/$1',
     '^@email$': '<rootDir>/src/infrastructure/email',
     '^@email/(.*)$': '<rootDir>/src/infrastructure/email/$1',
   },
+  maxWorkers: 1,
 };

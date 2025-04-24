@@ -5,28 +5,27 @@ const { getUserRepository } = require('../../persistence/index');
 jest.mock('../../persistence/index');
 
 describe('Signup Endpoint', () => {
-  let app;
-  let userRepository;
-  let stopServer;
-
   // Test both Express and Fastify servers
-  const webFrameworks = ['express'];
+  const webFrameworks = ['express', 'fastify'];
 
   webFrameworks.forEach((webFramework) => {
+    let server;
+    let userRepository;
+    let stopServer;
+
     describe(`with ${webFramework} server`, () => {
-      beforeEach(async () => {
-        let startServer;
-        ({ app, startServer, stopServer } = require(`../${webFramework}/app`));
+      beforeAll(async () => {
+        const { startServer } = require(`../${webFramework}/app`);
 
         // Initialize a fresh user repository for each test
         userRepository = new InMemoryUserRepository();
         getUserRepository.mockResolvedValue(userRepository);
 
         // Start the server
-        app = await startServer();
+        ({ server, stopServer } = await startServer());
       });
 
-      afterEach(async () => {
+      afterAll(async () => {
         // Stop the server after each test
         await stopServer();
       });
@@ -38,7 +37,7 @@ describe('Signup Endpoint', () => {
           password: 'password123',
         };
 
-        const response = await request(app).post('/api/users/signup').send(userData).expect(201);
+        const response = await request(server).post('/api/users/signup').send(userData).expect(201);
 
         expect(response.body).toHaveProperty('id');
         expect(response.body.name).toBe(userData.name);
@@ -59,8 +58,8 @@ describe('Signup Endpoint', () => {
           password: 'hashedpassword123',
         };
 
-        await request(app).post('/api/users/signup').send(userData).expect(201);
-        const response = await request(app).post('/api/users/signup').send(userData).expect(400);
+        await request(server).post('/api/users/signup').send(userData).expect(201);
+        const response = await request(server).post('/api/users/signup').send(userData).expect(400);
 
         expect(response.body).toHaveProperty('error');
         expect(response.body.error).toContain('already exists');
@@ -72,7 +71,7 @@ describe('Signup Endpoint', () => {
           password: 'password123',
         };
 
-        const response = await request(app).post('/api/users/signup').send(userData).expect(400);
+        const response = await request(server).post('/api/users/signup').send(userData).expect(400);
 
         expect(response.body).toHaveProperty('error');
       });
@@ -83,7 +82,7 @@ describe('Signup Endpoint', () => {
           password: 'password123',
         };
 
-        const response = await request(app).post('/api/users/signup').send(userData).expect(400);
+        const response = await request(server).post('/api/users/signup').send(userData).expect(400);
 
         expect(response.body).toHaveProperty('error');
       });
@@ -94,7 +93,7 @@ describe('Signup Endpoint', () => {
           email: 'nopassword@example.com',
         };
 
-        const response = await request(app).post('/api/users/signup').send(userData).expect(400);
+        const response = await request(server).post('/api/users/signup').send(userData).expect(400);
 
         expect(response.body).toHaveProperty('error');
       });
@@ -106,7 +105,7 @@ describe('Signup Endpoint', () => {
           password: 'password123',
         };
 
-        const response = await request(app).post('/api/users/signup').send(userData).expect(400);
+        const response = await request(server).post('/api/users/signup').send(userData).expect(400);
 
         expect(response.body).toHaveProperty('error');
       });
@@ -118,7 +117,7 @@ describe('Signup Endpoint', () => {
           password: 'short',
         };
 
-        const response = await request(app).post('/api/users/signup').send(userData).expect(400);
+        const response = await request(server).post('/api/users/signup').send(userData).expect(400);
 
         expect(response.body).toHaveProperty('error');
         expect(response.body.error).toContain('Password must be at least 8 characters long');

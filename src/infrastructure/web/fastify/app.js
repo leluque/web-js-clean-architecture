@@ -1,7 +1,8 @@
-const fastify = require('fastify')({ logger: true });
+const createFastify = () => require('fastify')({ logger: true });
 const path = require('path');
+const { logger } = require('../../log');
 
-const buildApp = async () => {
+const buildApp = async (fastify) => {
   // Use plugin scope to ensure order
   fastify.register(async function (instance) {
     await instance.register(require('./middlewares/auth'));
@@ -22,28 +23,31 @@ const buildApp = async () => {
 };
 
 const startServer = async () => {
-  const app = await buildApp();
-  let port = process.env.PORT || 3000;
+  const server = createFastify();
+  await buildApp(server);
+  let port = process.env.PORT || 0;
   try {
-    await app.listen({ port, host: '0.0.0.0' });
-    app.log.info(`Server listening on ${app.server.address().port}`);
+    await server.listen({ port, host: '0.0.0.0' });
+    server.log.info(`Server listening on ${server.server.address().port}`);
   } catch (err) {
-    app.log.error(err);
+    logger.error('Error starting server:', err);
+    server.log.error(err);
     process.exit(1);
   }
-  return app;
+  return {
+    server: server.server,
+    stopServer: async () => {
+      if (server && server.server) {
+        try {
+          await server.close();
+          server.log.info('Server successfully stopped');
+        } catch (err) {
+          server.log.error('Error stopping server:', err);
+          throw err;
+        }
+      }
+    },
+  };
 };
 
-const stopServer = async () => {
-  if (fastify && fastify.server) {
-    try {
-      await fastify.close();
-      fastify.log.info('Server successfully stopped');
-    } catch (err) {
-      fastify.log.error('Error stopping server:', err);
-      throw err;
-    }
-  }
-};
-
-module.exports = { fastify, startServer, stopServer };
+module.exports = { startServer };

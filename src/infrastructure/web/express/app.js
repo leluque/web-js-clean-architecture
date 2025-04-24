@@ -5,18 +5,17 @@ const requestWrapper = require('./middlewares/requestWrapper');
 const http = require('http');
 const { logger } = require('@infrastructure/log');
 
-// Create Express app
-const app = express();
-let server; // Store server reference for stopping
-
 /**
  * Initialize and start the server
  * @returns {http.Server} The HTTP server instance
  */
 const startServer = async () => {
+  // Create Express app
+  const app = express();
+
   // Set port from environment variable or default to 3000
   let port = process.env.PORT || 3000;
-  server = http.createServer(app);
+  const server = http.createServer(app);
 
   // Function to attempt server start
   const attemptServerStart = async (currentPort) => {
@@ -41,9 +40,8 @@ const startServer = async () => {
   // Handle port in use error
   server.on('error', (error) => {
     if (error.code === 'EADDRINUSE') {
-      logger.debug(`Port ${port} is already in use, trying port ${port + 1}`);
-      port += 1;
-      attemptServerStart(port);
+      logger.debug(`Port ${port} is already in use, trying a different port`);
+      attemptServerStart(0);
     } else {
       logger.error('Server error:', error);
       process.exit(1);
@@ -75,31 +73,28 @@ const startServer = async () => {
   // Start the server
   await attemptServerStart(port);
 
-  return server;
+  return {
+    server,
+    stopServer: async () => {
+      return new Promise((resolve, reject) => {
+        if (!server) {
+          logger.debug('Server is not running');
+          return resolve();
+        }
+
+        logger.debug('Stopping HTTP server');
+        server.close((err) => {
+          if (err) {
+            logger.error('Error closing HTTP server:', err);
+            return reject(err);
+          }
+
+          logger.debug('HTTP server closed successfully');
+          resolve();
+        });
+      });
+    },
+  };
 };
 
-/**
- * Stop the server gracefully
- * @returns {Promise<void>} A promise that resolves when the server is closed
- */
-const stopServer = async () => {
-  return new Promise((resolve, reject) => {
-    if (!server) {
-      logger.debug('Server is not running');
-      return resolve();
-    }
-
-    logger.debug('Stopping HTTP server');
-    server.close((err) => {
-      if (err) {
-        logger.error('Error closing HTTP server:', err);
-        return reject(err);
-      }
-
-      logger.debug('HTTP server closed successfully');
-      resolve();
-    });
-  });
-};
-
-module.exports = { app, startServer, stopServer };
+module.exports = { startServer };

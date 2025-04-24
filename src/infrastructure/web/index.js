@@ -3,7 +3,6 @@ require('dotenv').config();
 // Configure the application to use module aliases
 require('module-alias/register');
 
-let app;
 let startServer;
 
 // In a real application, we would choose between one of the two web frameworks
@@ -14,10 +13,10 @@ let startServer;
 // we are using.
 
 if (process.env.WEB_FRAMEWORK && process.env.WEB_FRAMEWORK.toLowerCase() === 'fastify') {
-  ({ app, startServer } = require('./fastify/app'));
+  ({ startServer } = require('./fastify/app'));
 } else {
   // Express is selected by default
-  ({ app, startServer } = require('./express/app'));
+  ({ startServer } = require('./express/app'));
 }
 
 /**
@@ -29,4 +28,4 @@ async function startApp() {
   await startServer();
 }
 
-module.exports = { app, startApp };
+module.exports = { startApp };
