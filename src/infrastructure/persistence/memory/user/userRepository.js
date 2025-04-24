@@ -9,7 +9,7 @@ const UserRepository = require('@business/user/userRepository');
 class InMemoryUserRepository extends UserRepository {
   constructor() {
     super();
-    this.users = new Map();
+    this.users = {};
     this.autoIncrementId = 1;
   }
 
@@ -18,48 +18,50 @@ class InMemoryUserRepository extends UserRepository {
     user.id = id;
     user.createdAt = user.createdAt || new Date();
     user.updatedAt = user.updatedAt || new Date();
-    this.users.set(id, { ...user });
+    this.users[id] = user.toJSON();
     return user;
   }
 
   async findById(id) {
-    const user = this.users.get(Number(id));
-    return user ? new User({ ...user }) : null;
+    const user = this.users[Number(id)];
+    return user ? user.toJSON() : null;
   }
 
   async findByEmail(email) {
-    for (const user of this.users.values()) {
+    for (const id in this.users) {
+      const user = this.users[id];
       if (user.email === email) {
-        return new User({ ...user });
+        return user.toJSON();
       }
     }
     return null;
   }
 
   async findByEmailValidationToken(token) {
-    for (const user of this.users.values()) {
+    for (const id in this.users) {
+      const user = this.users[id];
       if (user.emailValidationToken === token) {
-        return new User({ ...user });
+        return user.toJSON();
       }
     }
     return null;
   }
 
   async update(user) {
-    if (!this.users.has(user.id)) {
+    if (!this.users[user.id]) {
       throw new Error('User not found');
     }
     user.updatedAt = new Date();
-    this.users.set(user.id, { ...user });
+    this.users[user.id] = user.toJSON();
     return user;
   }
 
   async findAll() {
-    return Array.from(this.users.values()).map((user) => new User({ ...user }));
+    return Object.values(this.users).map((user) => user.toJSON());
   }
 
   async delete(id) {
-    this.users.delete(Number(id));
+    this.users[Number(id)] = undefined;
   }
 }
 

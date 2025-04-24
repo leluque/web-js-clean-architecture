@@ -227,6 +227,8 @@ class User {
       emailValidationToken: this.emailValidationToken,
       emailValidationTokenValidThru: this.emailValidationTokenValidThru,
       profileImage: this.profileImage,
+      toJSON: this.toJSON,
+      publicData: this.publicData,
     };
   }
 

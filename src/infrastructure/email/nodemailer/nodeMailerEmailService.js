@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const { EmailService } = require('../emailService');
+const { EmailService } = require('@business/shared/service/email');
 
 class NodeMailerEmailService extends EmailService {
   constructor() {

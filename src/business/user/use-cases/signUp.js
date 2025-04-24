@@ -73,6 +73,8 @@ class SignUpUseCase {
       emailContent
     );
 
+    logger.info('Sign up use case completed for user', { name, email });
+
     return savedUser.publicData;
   }
 }

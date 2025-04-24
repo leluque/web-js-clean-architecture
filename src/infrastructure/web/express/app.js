@@ -7,6 +7,7 @@ const { logger } = require('@infrastructure/log');
 
 // Create Express app
 const app = express();
+let server; // Store server reference for stopping
 
 /**
  * Initialize and start the server
@@ -15,7 +16,7 @@ const app = express();
 const startServer = async () => {
   // Set port from environment variable or default to 3000
   let port = process.env.PORT || 3000;
-  const server = http.createServer(app);
+  server = http.createServer(app);
 
   // Function to attempt server start
   const attemptServerStart = async (currentPort) => {
@@ -77,4 +78,28 @@ const startServer = async () => {
   return server;
 };
 
-module.exports = { app, startServer };
+/**
+ * Stop the server gracefully
+ * @returns {Promise<void>} A promise that resolves when the server is closed
+ */
+const stopServer = async () => {
+  return new Promise((resolve, reject) => {
+    if (!server) {
+      logger.debug('Server is not running');
+      return resolve();
+    }
+
+    logger.debug('Stopping HTTP server');
+    server.close((err) => {
+      if (err) {
+        logger.error('Error closing HTTP server:', err);
+        return reject(err);
+      }
+
+      logger.debug('HTTP server closed successfully');
+      resolve();
+    });
+  });
+};
+
+module.exports = { app, startServer, stopServer };

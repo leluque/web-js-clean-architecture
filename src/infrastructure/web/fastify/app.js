@@ -34,4 +34,16 @@ const startServer = async () => {
   return app;
 };
 
-module.exports = { fastify, startServer };
+const stopServer = async () => {
+  if (fastify && fastify.server) {
+    try {
+      await fastify.close();
+      fastify.log.info('Server successfully stopped');
+    } catch (err) {
+      fastify.log.error('Error stopping server:', err);
+      throw err;
+    }
+  }
+};
+
+module.exports = { fastify, startServer, stopServer };
