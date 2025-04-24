@@ -106,7 +106,6 @@ class User {
     } else {
       throw new Error('Disabled must be a boolean, 1/0, or "true"/"false" string');
     }
-    this.#_disabled = value;
   }
 
   get disabled() {
